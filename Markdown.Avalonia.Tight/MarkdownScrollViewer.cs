@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using MdStyle = Markdown.Avalonia.MarkdownStyle;
 
@@ -143,6 +144,7 @@ namespace Markdown.Avalonia
             _viewer.PointerPressed += _viewer_PointerPressed;
             _viewer.PointerMoved += _viewer_PointerMoved;
             _viewer.PointerReleased += _viewer_PointerReleased;
+            _viewer.PointerPressed += _viewer_PointerPressedForContextMenu;
 
             _wrapper = new Wrapper(this);
             _viewer.Content = _wrapper;
@@ -195,12 +197,40 @@ namespace Markdown.Avalonia
             }
         }
 
+        private void _viewer_PointerPressedForContextMenu(object? sender, PointerPressedEventArgs e)
+        {
+            if (_document is null || !SelectionEnabled) return;
+
+            var point = e.GetCurrentPoint(_document.Control);
+            if (point.Properties.IsRightButtonPressed)
+            {
+                var selectedText = _document.GetSelectedText();
+                if (string.IsNullOrEmpty(selectedText)) return;
+
+                var contextMenu = new ContextMenu();
+                var copyItem = new MenuItem { Header = "Copy" };
+                copyItem.Click += async (s, args) =>
+                {
+                    if (TopLevel.GetTopLevel(this) is TopLevel top
+                        && top.Clipboard is IClipboard clipboard)
+                    {
+                        await clipboard.SetTextAsync(selectedText);
+                    }
+                };
+                contextMenu.Items.Add(copyItem);
+                contextMenu.Open(_viewer);
+            }
+        }
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
             if (!SelectionEnabled) return;
 
-            // Ctrl+C
-            if (e.Key == Key.C && e.KeyModifiers == KeyModifiers.Control)
+            // Ctrl+C on Windows/Linux, Cmd+C on macOS
+            var isMac = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+            var copyModifier = isMac ? KeyModifiers.Meta : KeyModifiers.Control;
+            
+            if (e.Key == Key.C && e.KeyModifiers == copyModifier)
             {
                 if (_document is not null
                     && TopLevel.GetTopLevel(this) is TopLevel top
@@ -210,6 +240,8 @@ namespace Markdown.Avalonia
                 }
             }
         }
+
+        
 
         #endregion
 
