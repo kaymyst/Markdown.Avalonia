@@ -1,9 +1,9 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup >
-    <PackageTargetFrameworks>net9.0</PackageTargetFrameworks>
-    <DemoAppTargetFrameworks>net9.0</DemoAppTargetFrameworks>
-    <TestTargetFrameworks>net9.0</TestTargetFrameworks>
+    <PackageTargetFrameworks>net10.0</PackageTargetFrameworks>
+    <DemoAppTargetFrameworks>net10.0</DemoAppTargetFrameworks>
+    <TestTargetFrameworks>net10.0</TestTargetFrameworks>
   </PropertyGroup>
 
 
