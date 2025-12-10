@@ -82,6 +82,14 @@ namespace Markdown.Avalonia
                 owner => owner.SelectionEnabled,
                 (owner, v) => owner.SelectionEnabled = v);
 
+        private static readonly DirectProperty<MarkdownScrollViewer, string> SelectedTextDirectProperty =
+            AvaloniaProperty.RegisterDirect<MarkdownScrollViewer, string>(
+                nameof(SelectedText),
+                o => o.SelectedText,
+                (o, v) => o.SelectedText = v);
+
+        public static readonly AvaloniaProperty<string> SelectedTextProperty = SelectedTextDirectProperty;
+
         private static readonly HttpClient s_httpclient = new();
         private readonly ScrollViewer _viewer;
         private SetupInfo _setup;
@@ -796,6 +804,23 @@ namespace Markdown.Avalonia
         {
             get => _viewer.VerticalScrollBarVisibility;
             set => _viewer.VerticalScrollBarVisibility = value;
+        }
+
+        private string _selectedText = string.Empty;
+
+        public string SelectedText
+        {
+            get
+            {
+                if (_document is not null)
+                    return _document.GetSelectedText();
+                else
+                    return _selectedText;
+            }
+            set
+            {
+                SetAndRaise(SelectedTextDirectProperty, ref _selectedText, value);
+            }
         }
     }
 }
