@@ -783,6 +783,19 @@ namespace Markdown.Avalonia
                             control.Bounds.Width,
                             control.Bounds.Height);
             }
+
+            
+        }
+
+        public void ScrollToEnd()
+        {
+            _viewer.ScrollToEnd();
+        }
+
+        public ScrollBarVisibility VerticalScrollBarVisibility
+        {
+            get => _viewer.VerticalScrollBarVisibility;
+            set => _viewer.VerticalScrollBarVisibility = value;
         }
     }
 }
